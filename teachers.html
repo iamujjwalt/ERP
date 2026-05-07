@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teachers | EduSched Pro</title>
+    <link rel="stylesheet" href="/src/index.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans antialiased">
+    <div id="app" class="flex min-h-screen">
+        <aside id="sidebar" class="w-64 bg-slate-900 text-white flex-shrink-0 transition-all duration-300"></aside>
+
+        <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <header id="header" class="h-16 bg-white border-bottom border-gray-100 flex items-center justify-between px-6 sticky top-0 z-30 shadow-sm"></header>
+
+            <div id="content" class="flex-1 overflow-y-auto p-6">
+                <!-- Page Header -->
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h1 class="text-xl font-bold text-slate-900 tracking-tight">Faculty & Staff</h1>
+                        <p class="text-xs text-slate-500 font-medium">Manage human resources and workload balances.</p>
+                    </div>
+                    <button id="btn-add-teacher" class="btn-primary flex items-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Register Staff</span>
+                    </button>
+                </div>
+
+                <!-- Filters & Search -->
+                <div class="card mb-6 flex flex-wrap items-center gap-4 py-4">
+                    <div class="relative flex-1 min-w-[240px]">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="teacher-search" placeholder="Search by name, ID or subject..." class="pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm w-full outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-medium">
+                    </div>
+                    <select id="filter-level" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-600 outline-none focus:ring-4 focus:ring-indigo-500/10">
+                        <option value="">All Levels</option>
+                        <option value="Primary">Primary (1-3)</option>
+                        <option value="Middle">Middle (4-7)</option>
+                        <option value="Mixed">Mixed (4-8)</option>
+                        <option value="Senior">Senior (8-10)</option>
+                    </select>
+                    <select id="filter-status" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-600 outline-none focus:ring-4 focus:ring-indigo-500/10">
+                        <option value="">Status</option>
+                        <option value="active">Active Only</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+
+                <!-- Teachers Table -->
+                <div class="card overflow-hidden !p-0">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th class="w-16">ID</th>
+                                <th>Name</th>
+                                <th>Level & Incharge</th>
+                                <th>Subjects</th>
+                                <th>Max/Day</th>
+                                <th>Status</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacher-table-body">
+                            <!-- Injected by teacher.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="teacher-modal" class="fixed inset-0 z-50 invisible opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+        <div class="absolute right-0 top-0 h-full w-full max-w-xl bg-white shadow-2xl flex flex-col transform translate-x-full transition-transform duration-500 ease-in-out">
+            <div class="p-8 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex flex-col">
+                    <h2 id="modal-title" class="text-xl font-bold text-slate-900 tracking-tight">Add Teacher</h2>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Staff Profile Configuration</p>
+                </div>
+                <button id="close-modal" class="h-10 w-10 flex items-center justify-center hover:bg-slate-100 rounded-full text-slate-400 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <form id="teacher-form" class="flex-1 overflow-y-auto p-8 space-y-8">
+                <input type="hidden" id="edit-id">
+                
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Teacher ID</label>
+                        <input type="text" id="t-id" name="id" required class="input-field" placeholder="T-001">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Full Name</label>
+                        <input type="text" id="t-name" name="name" required class="input-field" placeholder="John Doe">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Gender</label>
+                        <select id="t-gender" name="gender" class="input-field">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Phone</label>
+                        <input type="tel" id="t-phone" name="phone" class="input-field" placeholder="98XXXXXXXX">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Grade Permission Level</label>
+                    <select id="t-level" name="level" required class="input-field">
+                        <option value="Primary">Primary (Grade 1–3)</option>
+                        <option value="Middle">Middle (Grade 4–7)</option>
+                        <option value="Mixed">Mixed (Grade 4–8)</option>
+                        <option value="Senior">Senior (Grade 8–10)</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Management Role</label>
+                        <div class="flex items-center mt-3 scale-110 origin-left">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="t-incharge" name="incharge" class="sr-only peer">
+                                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                                <span class="ml-3 text-xs font-bold text-slate-500 uppercase">Incharge</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Category</label>
+                        <select id="t-incharge-cat" name="inchargeCategory" class="input-field" disabled>
+                            <option value="">None</option>
+                            <option value="1-3">Grade 1-3 Incharge</option>
+                            <option value="4-6">Grade 4-6 Incharge</option>
+                            <option value="7-10">Grade 7-10 Incharge</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Daily Max Load</label>
+                        <input type="number" id="t-max-periods" name="maxPeriods" value="6" min="1" max="8" class="input-field">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Employment Status</label>
+                        <select id="t-active" name="active" class="input-field">
+                            <option value="true">Active/Full-time</option>
+                            <option value="false">On Leave / Inactive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Specialized Subjects</label>
+                    <input type="text" id="t-subjects" name="subjects" class="input-field" placeholder="e.g., English, Science, Arts">
+                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tight mt-2 italic">Use commas to separate multiple subject entries.</p>
+                </div>
+            </form>
+
+            <div class="p-8 border-t border-slate-100 flex gap-4 bg-slate-50/50">
+                <button id="cancel-form" class="btn-secondary flex-1 font-bold text-xs">DISCARD</button>
+                <button id="submit-form" class="btn-primary flex-1 font-bold text-xs bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/20">CONFIRM & SAVE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script type="module" src="/js/teacher.js"></script>
+</body>
+</html>

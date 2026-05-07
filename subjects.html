@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subject Management | EduSched Pro</title>
+    <link rel="stylesheet" href="/src/index.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans antialiased">
+    <div id="app" class="flex min-h-screen">
+        <aside id="sidebar" class="w-64 bg-slate-900 text-white flex-shrink-0 transition-all duration-300"></aside>
+
+        <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <header id="header" class="h-16 bg-white border-bottom border-gray-100 flex items-center justify-between px-6 sticky top-0 z-30 shadow-sm"></header>
+
+            <div id="content" class="flex-1 overflow-y-auto p-6">
+                <!-- Page Header -->
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h1 class="text-xl font-bold text-slate-900 tracking-tight">Curriculum Management</h1>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Course modules, logic and workload distribution</p>
+                    </div>
+                    <button id="btn-add-subject" class="btn-primary flex items-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Register Subject</span>
+                    </button>
+                </div>
+
+                <!-- Subjects Table -->
+                <div class="card overflow-hidden !p-0">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Curriculum Name</th>
+                                <th>Weekly Load</th>
+                                <th>Class Type</th>
+                                <th>Faculty Link</th>
+                                <th class="text-right px-8">Audit Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="subject-table-body" class="divide-y divide-slate-50">
+                            <!-- Injected by subject.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Subject Modal -->
+    <div id="subject-modal" class="fixed inset-0 z-50 invisible opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+        <div class="absolute right-0 top-0 h-full w-full max-w-xl bg-white shadow-2xl flex flex-col transform translate-x-full transition-transform duration-500 ease-in-out">
+            <div class="p-8 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex flex-col">
+                    <h2 id="modal-title" class="text-xl font-bold text-slate-900 tracking-tight">Subject Profile</h2>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Academic Unit Definition</p>
+                </div>
+                <button id="close-modal" class="h-10 w-10 flex items-center justify-center hover:bg-slate-100 rounded-full text-slate-400 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <form id="subject-form" class="flex-1 overflow-y-auto p-8 space-y-8">
+                <input type="hidden" id="edit-id">
+                
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Subject Title</label>
+                    <input type="text" id="s-name" name="name" required class="input-field" placeholder="Mathematics, Physics, Social Studies">
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Intensity (Periods/Week)</label>
+                        <input type="number" id="s-periods" name="periodsPerWeek" value="6" min="1" max="15" required class="input-field">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Internal UID (Code)</label>
+                        <input type="text" id="s-code" name="id" required class="input-field" placeholder="MATH101">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 transition-all hover:bg-white hover:shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Laboratory Unit</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="s-practical" name="isPractical" class="sr-only peer">
+                                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 transition-all hover:bg-white hover:shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Extension (Double)</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="s-double" name="isDouble" class="sr-only peer">
+                                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Eligible Faculty</label>
+                    <div id="teachers-list-selection" class="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto p-4 bg-slate-50/50 rounded-2xl border border-slate-100 custom-scrollbar">
+                        <!-- Injected by subject.js -->
+                    </div>
+                </div>
+            </form>
+
+            <div class="p-8 border-t border-slate-100 flex gap-4 bg-slate-50/50">
+                <button id="cancel-form" class="btn-secondary flex-1 font-bold text-[10px] uppercase">DISCARD</button>
+                <button id="submit-form" class="btn-primary flex-1 bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/20 font-bold text-[10px] uppercase">COMMIT SUBJECT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script type="module" src="/js/subject.js"></script>
+</body>
+</html>
